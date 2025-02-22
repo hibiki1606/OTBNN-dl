@@ -14,7 +14,7 @@ handler = StreamHandler()
 
 global_logger.addHandler(handler)
 
-def parse_otbnn_url(url: str) -> Tuple[str, str, str]:
+def parse_otbnn_url(url: str) -> Tuple[str | None, str | None, str | None]:
     parsed_url = parse.urlparse(url)
     path = parsed_url.path
     base_url = parsed_url.hostname
@@ -27,7 +27,7 @@ def parse_otbnn_url(url: str) -> Tuple[str, str, str]:
     if cast_uuid:
         return (base_url, 'post', cast_uuid.group(1))
     
-    return None, None
+    return None, None, None
 
 def sanitise_filename(filename: str) -> str:
     """
