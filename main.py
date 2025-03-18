@@ -8,10 +8,7 @@ from otbnn_client import BnnClient
 
 logging.basicConfig(
     level=logging.INFO,
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.StreamHandler(sys.stderr),
-    ],
+    handlers=[logging.StreamHandler(sys.stdout)],
     format="%(message)s",
 )
 
