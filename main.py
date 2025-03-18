@@ -9,7 +9,7 @@ from otbnn_client import BnnClient
 if __name__ == '__main__':
     async def main():
         parser = argparse.ArgumentParser(description = 'OTBNN Downloader')
-        parser.add_argument('otbnn_url', help = 'An OTBNN url of an user or a post.')
+        parser.add_argument('otbnn_url', help = 'An OTBNN url of an user or a cast.')
         parser.add_argument(
             '-o', '--output_dir', 
             help = 'Path to the folder where downloaded files will be saved. If nothing is specified, the output folder will be created directly under the path where this source file is located.', 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
         otbnn_client = BnnClient(base_url)
         
-        if (uuid_kind == 'user'):
+        if (uuid_kind == utils.UrlKind.USER):
             posts = await otbnn_client.get_posts_from_user(uuid)
             
             for post in posts:
@@ -43,7 +43,7 @@ if __name__ == '__main__':
                 )
 
                 time.sleep(2)
-        elif(uuid_kind == 'post'):
+        elif(uuid_kind == utils.UrlKind.CAST):
             post = await otbnn_client.get_post(uuid)
             utils.global_logger.info(f'downloading: {post.original_url}({post.media_url}) ...')
 
