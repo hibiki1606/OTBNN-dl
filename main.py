@@ -1,61 +1,66 @@
 import asyncio
 import argparse
-import time
-
+import logging
+import sys
 import utils
 
-from otbnn_client import BnnClient, BnnPost
+from otbnn_client import BnnClient
 
-if __name__ == '__main__':
-    async def main():
-        parser = argparse.ArgumentParser(description = 'OTBNN Downloader')
-        parser.add_argument('otbnn_url', help = 'An OTBNN url of an user or a cast.')
-        parser.add_argument(
-            '-o', '--output_dir', 
-            help = 'Path to the folder where downloaded files will be saved. '
-                   'If nothing is specified, the output folder will be created directly under the path where this source file is located.', 
-            default = 'dl'
-        )
-        parser.add_argument('-s', '--sleep_time', help = 'Set the wait time between each download (Seconds)', type = float, default = 2.0)
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[logging.StreamHandler(sys.stdout)],
+    format="%(message)s",
+)
 
-        args = parser.parse_args()
-        
-        otbnn_url = args.otbnn_url
-        output_dir = args.output_dir
-        sleep_time = args.sleep_time
 
-        base_url, uuid_kind, uuid = utils.parse_otbnn_url(otbnn_url)
+async def main():
+    parser = argparse.ArgumentParser(description="OTBNN Downloader")
+    parser.add_argument("otbnn_url", help="An OTBNN url of an user or a cast.")
+    parser.add_argument(
+        "-o",
+        "--output_dir",
+        help="Path to the folder where downloaded files will be saved. "
+        "If nothing is specified, the output folder will be created directly under the path where this source file is located.",
+        default="dl",
+    )
+    parser.add_argument(
+        "-s",
+        "--sleep_time",
+        help="Set the wait time between each download (Seconds)",
+        type=float,
+        default=2.0,
+    )
 
-        otbnn_client = BnnClient(base_url)
+    args = parser.parse_args()
 
-        async def save_post(post: BnnPost):
-            utils.global_logger.info(f'downloading: {post.original_url}({post.media_url}) ...')
+    otbnn_url = args.otbnn_url
+    output_dir = args.output_dir
+    otbnn = utils.parse_otbnn_url(otbnn_url)
+    if not otbnn:
+        logging.error("Incorrect URL!")
+        return
+    bnn_client = BnnClient(otbnn.base_url, output_dir)
 
-            result = await otbnn_client.get_http(post.media_url)
+    match otbnn.uuid_kind:
+        case utils.BnnUrlKind.USER:
+            posts = await bnn_client.get_posts_from_user(otbnn.uuid)
+            save_tasks = []
 
-            utils.save_mp3_media(
-                output_dir_path = output_dir,
-                output_filename = f'{post.user_name} - {post.title} [{post.created_at.strftime('%Y-%m-%d_%H%M')}]',
-                mp3_bytes = result.content,
-                mp3_artist_name = post.user_id,
-                mp3_title = post.title,
-                mp3_website = post.original_url
-            )
+            for post in posts:
+                save_tasks.append(bnn_client.save_post(post))
 
-        match uuid_kind:
-            case utils.BnnUrlKind.USER:
-                posts = await otbnn_client.get_posts_from_user(uuid)
-                
-                for post in posts:
-                    await save_post(post)
+            await asyncio.gather(*save_tasks)
 
-                    time.sleep(sleep_time)
-            case utils.BnnUrlKind.CAST:
-                post = await otbnn_client.get_post(uuid)
-                
-                await save_post(post)
-            case _:
-                utils.global_logger.info(f'"{otbnn_url}" is not a valid URL for this program!')
-                return
-        utils.global_logger.info('Download Complete!')
+        case utils.BnnUrlKind.CAST:
+            post = await bnn_client.get_post(otbnn.uuid)
+            await bnn_client.save_post(post, output_dir)
+
+        case _:
+            logging.info(f'"{otbnn_url}" is not a valid URL for this program!')
+            return
+
+    logging.info("Download Complete!")
+
+
+if __name__ == "__main__":
     asyncio.run(main())
