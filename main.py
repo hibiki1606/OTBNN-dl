@@ -53,7 +53,7 @@ async def main():
 
         case utils.BnnUrlKind.CAST:
             post = await bnn_client.get_post(otbnn.uuid)
-            await bnn_client.save_post(post, output_dir)
+            await bnn_client.save_post(post)
 
         case _:
             logging.info(f'"{otbnn_url}" is not a valid URL for this program!')
