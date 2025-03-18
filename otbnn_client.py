@@ -17,11 +17,14 @@ class BnnPost:
     created_at: datetime
     original_url: str
 
+    def __eq__(self, other):
+        self.media_url == other.media_url
+
 
 class BnnClient:
     def __init__(self, base_url: str, output_dir: str):
         self.base_url = base_url
-        self.BASE_API_URL = f"https://api.v2.{base_url}/api"
+        self.base_api_url = f"https://api.v2.{base_url}/api"
         self.output_dir = output_dir
         self.http = httpx.AsyncClient()
 
@@ -50,7 +53,7 @@ class BnnClient:
 
     async def get_post(self, post_uuid: str) -> BnnPost | None:
         try:
-            response = await self.get_http(f"{self.BASE_API_URL}/casts/{post_uuid}")
+            response = await self.get_http(f"{self.base_api_url}/casts/{post_uuid}")
             data = response.json()
 
             return self.parse_post_from_json(data)
@@ -59,7 +62,7 @@ class BnnClient:
             return None
 
     async def get_posts_from_user(self, user_uuid: str) -> list[BnnPost]:
-        page_url = f"{self.BASE_API_URL}/users/{user_uuid}/casts?is_adult=true"
+        page_url = f"{self.base_api_url}/users/{user_uuid}/casts?is_adult=true"
         posts: list[BnnPost] = []
 
         post_count: int = 1
@@ -84,7 +87,7 @@ class BnnClient:
         return posts
 
     async def get_user(self, user_uuid: str):
-        response = await self.get_http(f"{self.BASE_API_URL}/users/{user_uuid}")
+        response = await self.get_http(f"{self.base_api_url}/users/{user_uuid}")
         data = response.json()
 
         return data
