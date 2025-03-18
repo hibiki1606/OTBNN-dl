@@ -29,8 +29,7 @@ if __name__ == '__main__':
             posts = await otbnn_client.get_posts_from_user(uuid)
             
             for post in posts:
-                post_url = f'https://{otbnn_client.BASE_URL}/cast/{post.original_id}'
-                utils.global_logger.info(f'downloading: {post_url}({post.media_url}) ...')
+                utils.global_logger.info(f'downloading: {post.original_url}({post.media_url}) ...')
 
                 result = await otbnn_client.get_http(post.media_url)
 
@@ -40,13 +39,13 @@ if __name__ == '__main__':
                     mp3_bytes = result.content,
                     mp3_artist_name = post.user_id,
                     mp3_title = post.title,
-                    mp3_website = post_url
+                    mp3_website = post.original_url
                 )
 
                 time.sleep(2)
         elif(uuid_kind == 'post'):
             post = await otbnn_client.get_post(uuid)
-            utils.global_logger.info(f'downloading: {otbnn_url}({post.media_url}) ...')
+            utils.global_logger.info(f'downloading: {post.original_url}({post.media_url}) ...')
 
             result = await otbnn_client.get_http(post.media_url)
 
@@ -56,7 +55,7 @@ if __name__ == '__main__':
                 mp3_bytes = result.content,
                 mp3_artist_name = post.user_id,
                 mp3_title = post.title,
-                mp3_website = otbnn_url
+                mp3_website = post.original_url
             )
         else:
             utils.global_logger.info(f'"{otbnn_url}" is not a valid URL for this program!')

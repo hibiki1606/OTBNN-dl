@@ -14,6 +14,7 @@ class BnnPost:
     media_url: str
     original_id: str
     created_at: datetime
+    original_url: str
 
 class BnnClient:
     def __init__(self, BASE_URL: str):
@@ -32,15 +33,15 @@ class BnnClient:
             utils.global_logger.error(f'An error occurred! Here is the information:\n{e}\n\nTry another User ID or Post ID!')
             sys.exit(1)
 
-    @staticmethod
-    def get_post_from_json(raw_post: dict) -> BnnPost:
+    def parse_post_from_json(self, raw_post: dict) -> BnnPost:
         return BnnPost(
             title = raw_post['post']['title'],
             user_id = raw_post['post']['user']['username'],
             user_name = raw_post['post']['user']['name'],
             media_url = raw_post['audio_url'],
             original_id = raw_post['post']['id'],
-            created_at = datetime.fromisoformat(raw_post['post']['created_at'])
+            created_at = datetime.fromisoformat(raw_post['post']['created_at']),
+            original_url = f'https://{self.BASE_URL}/cast/{raw_post['post']['id']}'
         )
 
     async def get_post(self, post_uuid: str) -> BnnPost | None:
@@ -48,7 +49,7 @@ class BnnClient:
             response = await self.get_http(f'{self.BASE_API_URL}/casts/{post_uuid}')
             data = response.json()
 
-            return self.get_post_from_json(data)
+            return self.parse_post_from_json(data)
         except httpx.HTTPStatusError as e:
             utils.global_logger.error(e)
             return None
@@ -66,7 +67,7 @@ class BnnClient:
             utils.global_logger.info(f'page: {page_url}')
 
             for post in data['data']:
-                instance = self.get_post_from_json(post)
+                instance = self.parse_post_from_json(post)
 
                 utils.global_logger.info(f'{post_count}: {instance.title}')
                 post_count += 1
