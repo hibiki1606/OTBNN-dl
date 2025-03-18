@@ -15,22 +15,22 @@ handler = StreamHandler()
 
 global_logger.addHandler(handler)
 
-class UrlKind(Enum):
+class BnnUrlKind(Enum):
     USER = 1
     CAST = 2
 
-def parse_otbnn_url(url: str) -> Tuple[str | None, UrlKind | None, str | None]:
+def parse_otbnn_url(url: str) -> Tuple[str | None, BnnUrlKind | None, str | None]:
     parsed_url = parse.urlparse(url)
     path = parsed_url.path
     base_url = parsed_url.hostname
 
     user_uuid = re.match(r'^/?(?:deep/|general/)?user/([\w-]+)(/cast)?$', path)
     if user_uuid:
-        return (base_url, UrlKind.USER, user_uuid.group(1))
+        return (base_url, BnnUrlKind.USER, user_uuid.group(1))
     
     cast_uuid = re.match(r'^/?(?:deep/|general/)?cast/([\w-]+)$', path)
     if cast_uuid:
-        return (base_url, UrlKind.CAST, cast_uuid.group(1))
+        return (base_url, BnnUrlKind.CAST, cast_uuid.group(1))
     
     return None, None, None
 

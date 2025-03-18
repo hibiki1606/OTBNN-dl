@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
         otbnn_client = BnnClient(base_url)
         
-        if (uuid_kind == utils.UrlKind.USER):
+        if (uuid_kind == utils.BnnUrlKind.USER):
             posts = await otbnn_client.get_posts_from_user(uuid)
             
             for post in posts:
@@ -43,7 +43,7 @@ if __name__ == '__main__':
                 )
 
                 time.sleep(2)
-        elif(uuid_kind == utils.UrlKind.CAST):
+        elif(uuid_kind == utils.BnnUrlKind.CAST):
             post = await otbnn_client.get_post(uuid)
             utils.global_logger.info(f'downloading: {post.original_url}({post.media_url}) ...')
 
