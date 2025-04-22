@@ -36,7 +36,7 @@ async def main():
 
     match otbnn.uuid_kind:
         case utils.BnnUrlKind.USER:
-            posts = await bnn_client.get_posts_from_user(otbnn.uuid)
+            posts = await bnn_client.get_posts_from_user(otbnn.uuid, otbnn.deep)
             save_tasks = []
 
             for post in posts:
