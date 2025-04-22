@@ -23,13 +23,6 @@ async def main():
         "If nothing is specified, the output folder will be created directly under the path where this source file is located.",
         default="dl",
     )
-    parser.add_argument(
-        "-s",
-        "--sleep_time",
-        help="Set the wait time between each download (Seconds)",
-        type=float,
-        default=2.0,
-    )
 
     args = parser.parse_args()
 
