@@ -93,7 +93,7 @@ class BnnClient:
         return data
 
     async def save_post(self, post: BnnPost):
-        logging.info(f"Downloading: {post.original_url}({post.media_url}) ...")
+        logging.info(f"Downloading: {post.original_url} ( {post.media_url} ) ...")
 
         result = await self.get_http(post.media_url)
 
