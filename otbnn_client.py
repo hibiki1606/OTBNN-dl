@@ -35,9 +35,7 @@ class BnnClient:
 
             return response
         except httpx.HTTPStatusError as e:
-            logging.error(
-                f"An error occurred! Here is the information:\n{e}\n\nTry another User ID or Post ID!"
-            )
+            logging.error(f"An error occurred! Here is the information:\n{e}\n\nTry another User ID or Post ID!")
             sys.exit(1)
 
     def parse_post_from_json(self, raw_post: dict) -> BnnPost:
