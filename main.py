@@ -48,7 +48,7 @@ async def main():
             logging.info(f"We are going to download the post {posts[0].title} by {posts[0].user_name}...")
 
         case _:
-            logging.info(f'"{otbnn_url}" is not a valid URL for this program!')
+            logging.error(f'"{otbnn_url}" is not a valid URL for this program!')
             return
 
     # Download Post(s)
