@@ -14,14 +14,14 @@ class BnnUrlKind(Enum):
 
 
 @dataclass
-class Otbnn:
+class OtbnnKind:
     base_url: Optional[str]
     deep: Optional[bool]
     uuid_kind: Optional[BnnUrlKind]
     uuid: Optional[str]
 
 
-def parse_otbnn_url(url: str) -> Optional[Otbnn]:
+def parse_otbnn_url(url: str) -> Optional[OtbnnKind]:
     parsed_url = parse.urlparse(url)
     path = parsed_url.path
     base_url = parsed_url.hostname
@@ -34,7 +34,7 @@ def parse_otbnn_url(url: str) -> Optional[Otbnn]:
     for pattern, kind in zip(uuid_patterns, kinds):
         uuid: re.Match = re.match(pattern, path)
         if uuid:
-            return Otbnn(base_url, (uuid.group(1) == "deep/"), kind, uuid.group(2))
+            return OtbnnKind(base_url, (uuid.group(1) == "deep/"), kind, uuid.group(2))
 
 
 def sanitise_filename(filename: str) -> str:

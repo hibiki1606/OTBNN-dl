@@ -30,21 +30,21 @@ async def main():
     # Prepare Variables
     otbnn_url = args.otbnn_url
     output_dir = args.output_dir
-    otbnn = utils.parse_otbnn_url(otbnn_url)
-    if not otbnn:
+    otbnn_kind = utils.parse_otbnn_url(otbnn_url)
+    if not otbnn_kind:
         logging.error("Incorrect URL!")
         return
-    bnn_client = BnnClient(otbnn.base_url, output_dir)
+    bnn_client = BnnClient(otbnn_kind.base_url, output_dir)
     posts: list[BnnPost] = []
 
     # Fetch Post(s)
-    match otbnn.uuid_kind:
+    match otbnn_kind.uuid_kind:
         case utils.BnnUrlKind.USER:
-            posts = await bnn_client.get_posts_from_user(otbnn.uuid, otbnn.deep)
-            logging.info(f"We are going to download all {"R18" if otbnn.deep else "Non-R18"} posts by {posts[0].user_name}...")
+            posts = await bnn_client.get_posts_from_user(otbnn_kind.uuid, otbnn_kind.deep)
+            logging.info(f"We are going to download all {"R18" if otbnn_kind.deep else "Non-R18"} posts by {posts[0].user_name}...")
 
         case utils.BnnUrlKind.CAST:
-            posts.append(await bnn_client.get_post(otbnn.uuid))
+            posts.append(await bnn_client.get_post(otbnn_kind.uuid))
             logging.info(f"We are going to download the post {posts[0].title} by {posts[0].user_name}...")
 
         case _:
