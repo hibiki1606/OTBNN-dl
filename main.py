@@ -4,7 +4,7 @@ import logging
 import sys
 import utils
 
-from otbnn_client import BnnClient
+from otbnn_client import BnnClient, BnnPost
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,6 +14,7 @@ logging.basicConfig(
 
 
 async def main():
+    # Prepare Arguments
     parser = argparse.ArgumentParser(description="OTBNN Downloader")
     parser.add_argument("otbnn_url", help="An OTBNN url of an user or a cast.")
     parser.add_argument(
@@ -26,6 +27,7 @@ async def main():
 
     args = parser.parse_args()
 
+    # Prepare Variables
     otbnn_url = args.otbnn_url
     output_dir = args.output_dir
     otbnn = utils.parse_otbnn_url(otbnn_url)
@@ -33,25 +35,31 @@ async def main():
         logging.error("Incorrect URL!")
         return
     bnn_client = BnnClient(otbnn.base_url, output_dir)
+    posts: list[BnnPost] = []
 
+    # Fetch Post(s)
     match otbnn.uuid_kind:
         case utils.BnnUrlKind.USER:
             posts = await bnn_client.get_posts_from_user(otbnn.uuid, otbnn.deep)
-            save_tasks = []
-
-            for post in posts:
-                save_tasks.append(bnn_client.save_post(post))
-
-            await asyncio.gather(*save_tasks)
+            logging.info(f"We are going to download all {"R18" if otbnn.deep else "Non-R18"} posts by {posts[0].user_name}...")
 
         case utils.BnnUrlKind.CAST:
-            post = await bnn_client.get_post(otbnn.uuid)
-            await bnn_client.save_post(post)
+            posts.append(await bnn_client.get_post(otbnn.uuid))
+            logging.info(f"We are going to download the post {posts[0].title} by {posts[0].user_name}...")
 
         case _:
             logging.info(f'"{otbnn_url}" is not a valid URL for this program!')
             return
 
+    # Download Post(s)
+    save_tasks = []
+
+    for post in posts:
+        save_tasks.append(bnn_client.save_post(post))
+
+    await asyncio.gather(*save_tasks)
+
+    # Quit
     logging.info("Download Complete!")
 
 
