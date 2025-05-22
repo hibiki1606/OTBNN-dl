@@ -60,7 +60,7 @@ class BnnClient:
             return None
 
     async def get_posts_from_user(self, user_uuid: str, deep: bool) -> list[BnnPost]:
-        page_url = f"{self.base_api_url}/users/{user_uuid}/casts?is_adult={('true' if deep else 'false')}"
+        page_url = f"{self.base_api_url}/users/{user_uuid}/casts?is_adult={str(deep).lower()}"
         posts: list[BnnPost] = []
 
         post_count: int = 1
