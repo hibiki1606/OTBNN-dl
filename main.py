@@ -41,7 +41,7 @@ async def main():
     match otbnn_kind.uuid_kind:
         case utils.BnnUrlKind.USER:
             posts = await bnn_client.get_posts_from_user(otbnn_kind.uuid, otbnn_kind.deep)
-            logging.info(f"We are going to download all {"R18" if otbnn_kind.deep else "Non-R18"} posts by {posts[0].user_name}...")
+            logging.info(f"We are going to download all {'R18' if otbnn_kind.deep else 'Non-R18'} posts by {posts[0].user_name}...")
 
         case utils.BnnUrlKind.CAST:
             posts.append(await bnn_client.get_post(otbnn_kind.uuid))
