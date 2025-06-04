@@ -3,8 +3,8 @@
 A simple collection of python scripts that allows you to download OTBNN posts.
 
 #### Features:
-- Download a post or posts by an user as an mp3, from an URL.
-- Detect whether to download R18 or Non-R18 from the provided url of an user.
+- Download a post or posts by an user as an mp3.
+- Detect whether to download R18 or Non-R18 from the provided url.
 
 #### Todo:
 - Skip posts which have already been downloaded.
