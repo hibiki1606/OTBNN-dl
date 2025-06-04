@@ -7,7 +7,7 @@ A simple collection of python scripts that allows you to download OTBNN posts.
 - Detect whether to download R18 or Non-R18 from the provided url.
 
 #### Todo:
-- Skip posts which have already been downloaded.
+- Skip the posts which have already been downloaded.
 
 Thanks to Shewi for refactoring the code!
 
