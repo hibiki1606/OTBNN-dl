@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Union
 import httpx
 import logging
 import sys
-
 import utils
 
 
@@ -23,7 +23,7 @@ class BnnPost:
 
 
 class BnnClient:
-    def __init__(self, base_url: str, output_dir: str):
+    def __init__(self, base_url: str, output_dir: Union[str, Path]):
         self.base_url = base_url
         self.base_api_url = f"https://api.v2.{base_url}/api"
         self.output_dir = Path(output_dir)
