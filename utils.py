@@ -46,33 +46,25 @@ def sanitise_filename(filename: str) -> str:
 
 
 def save_mp3_media(
-    output_dir_path: str,
-    output_filename: str,
+    output_path: Path,
     mp3_bytes: bytes,
     mp3_artist_name: str = None,
     mp3_title: str = None,
     mp3_website: str = None,
 ) -> None:
-    """
-    Save mp3 from bytes and tags.
+    output_path.parent.mkdir(exist_ok=True)
 
-    Args:
-        output_dir_path (str): The path of a directory where mp3 files will be saved.
-            If the directory does not exist, it will be created automatically.
-        output_filename (str): The filename of mp3
-    """
-    output_dir = Path(output_dir_path)
-    output_dir.mkdir(exist_ok=True)
+    if not output_path.suffix == ".mp3":
+        logging.warning("The file will be saved without an extension!")
 
-    file_path = output_dir / (output_filename + ".mp3")
-    file_path.write_bytes(mp3_bytes)
+    output_path.write_bytes(mp3_bytes)
 
-    meta = mutagen.File(file_path, easy=True)
+    meta = mutagen.File(output_path, easy=True)
     meta["artist"] = mp3_artist_name
     meta["title"] = mp3_title
     meta["website"] = mp3_website
 
     meta.save()
 
-    logging.info(f"mp3 saved, to: {file_path} !")
+    logging.info(f"mp3 saved, to: {output_path} !")
     return

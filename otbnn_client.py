@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 import httpx
 import logging
 import sys
@@ -25,7 +26,7 @@ class BnnClient:
     def __init__(self, base_url: str, output_dir: str):
         self.base_url = base_url
         self.base_api_url = f"https://api.v2.{base_url}/api"
-        self.output_dir = output_dir
+        self.output_dir = Path(output_dir)
         self.http = httpx.AsyncClient()
 
     async def get_http(self, api_url: str) -> httpx.Response:
@@ -93,11 +94,17 @@ class BnnClient:
     async def save_post(self, post: BnnPost):
         logging.info(f"Downloading: {post.original_url} ( {post.media_url} ) ...")
 
+        filename = f"{post.user_name} - {post.title} [{post.created_at.strftime('%Y-%m-%d_%H%M')}].mp3"
+        output_path = self.output_dir / filename
+
+        if output_path.exists():
+            logging.info(f"The downloaded file {output_path} already exists, we're skipping this post!")
+            return
+
         result = await self.get_http(post.media_url)
 
         utils.save_mp3_media(
-            output_dir_path=self.output_dir,
-            output_filename=f"{post.user_name} - {post.title} [{post.created_at.strftime('%Y-%m-%d_%H%M')}]",
+            output_path=output_path,
             mp3_bytes=result.content,
             mp3_artist_name=post.user_id,
             mp3_title=post.title,
