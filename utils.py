@@ -55,7 +55,7 @@ def save_mp3_media(
     output_path.parent.mkdir(exist_ok=True)
 
     if not output_path.suffix == ".mp3":
-        logging.warning("The file will be saved without an extension!")
+        logging.warning("The file will be saved without a valid extension!")
 
     output_path.write_bytes(mp3_bytes)
 
