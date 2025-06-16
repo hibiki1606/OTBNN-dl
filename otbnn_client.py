@@ -64,7 +64,7 @@ class BnnClient:
         page_url = f"{self.base_api_url}/users/{user_uuid}/casts?is_adult={str(deep).lower()}"
         posts: list[BnnPost] = []
 
-        post_count: int = 1
+        post_count = 1
 
         while page_url:
             response = await self.get_http(page_url)
@@ -92,7 +92,7 @@ class BnnClient:
         return data
 
     async def save_post(self, post: BnnPost):
-        logging.info(f"Downloading: {post.original_url} ( {post.media_url} ) ...")
+        logging.info(f"Preparing to download: {post.original_url} ( {post.media_url} ) ...")
 
         filename = f"{post.user_name} - {post.title} [{post.created_at.strftime('%Y-%m-%d_%H%M')}].mp3"
         output_path = self.output_dir / filename
