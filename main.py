@@ -35,7 +35,7 @@ async def main():
         logging.error("Incorrect URL!")
         return
     bnn_client = BnnClient(otbnn_kind.base_url, output_dir)
-    posts: list[BnnPost] = []
+    posts: list[BnnPost]
 
     # Fetch Post(s)
     match otbnn_kind.uuid_kind:
@@ -44,7 +44,7 @@ async def main():
             logging.info(f"We are going to download all {'R18' if otbnn_kind.deep else 'Non-R18'} posts by {posts[0].user_name}...")
 
         case utils.BnnUrlKind.CAST:
-            posts.append(await bnn_client.get_post(otbnn_kind.uuid))
+            posts = [await bnn_client.get_post(otbnn_kind.uuid)]
             logging.info(f"We are going to download the post {posts[0].title} by {posts[0].user_name}...")
 
         case _:
