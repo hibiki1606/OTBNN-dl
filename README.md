@@ -17,7 +17,7 @@ Therefore, you will just have to put a URL to download.
 
 Here's some examples that you can use:
 
-> Download a post as a single mp3 file (without -o option, it will autocatically save them into *dl* directory).
+> Download a post as a single mp3 file (without -o option, it will automatically save them into *dl* directory).
 ```
 python main.py https://xxxx.com/general/cast/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
