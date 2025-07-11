@@ -19,12 +19,12 @@ Here's some examples that you can use:
 
 > Download a post as a single mp3 file (without -o option, it will automatically save them into *dl* directory).
 ```
-python main.py https://xxxx.com/general/cast/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+python main.py https://example.com/general/cast/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
 > Download all posts by a user as mp3 files into *neko* directory
 ```
-python main.py https://xxxx.com/general/user/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx -o neko
+python main.py https://example.com/general/user/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx -o neko
 ```
 
 > [!IMPORTANT]
