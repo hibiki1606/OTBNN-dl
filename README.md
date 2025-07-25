@@ -8,6 +8,7 @@ A simple collection of python scripts that allows you to download OTBNN posts.
 - Skip the posts which have already been downloaded.
 
 #### Todo:
+- Sanitise filenames more precisely to avoid filesystem related errors.
 
 ### How to use
 First of all, set up your virtual environment to install dependencies.  
