@@ -1,12 +1,25 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 import httpx
 import logging
 import sys
 import utils
 
+class BnnUserNotFoundError(Exception):
+    def __init__(self, uuid = ""):
+        self.uuid = uuid
+
+    def __str__(self):
+        return f"The user that has a UUID {self.uuid} wasn't found!"
+    
+class BnnPostNotFoundError(Exception):
+    def __init__(self, uuid = ""):
+        self.uuid = uuid
+
+    def __str__(self):
+        return f"The post that has a UUID {self.uuid} wasn't found!"
 
 @dataclass
 class BnnPost:
@@ -29,15 +42,15 @@ class BnnClient:
         self.output_dir = Path(output_dir)
         self.http = httpx.AsyncClient()
 
-    async def get_http(self, api_url: str) -> httpx.Response:
+    async def get_http(self, api_url: str) -> Optional[httpx.Response]:
         try:
             response = await self.http.get(api_url)
             response.raise_for_status()
 
             return response
         except httpx.HTTPStatusError as e:
-            logging.error(f"An error occurred! Here is the information:\n{e}\n\nTry another User ID or Post ID!")
-            sys.exit(1)
+            logging.error(f"An error occurred during an HTTP request! Here is the information:\n{e}")
+            return None
 
     def parse_post_from_json(self, raw_post: dict) -> BnnPost:
         return BnnPost(
@@ -50,9 +63,12 @@ class BnnClient:
             original_url=f"https://{self.base_url}/cast/{raw_post['post']['id']}",
         )
 
-    async def get_post(self, post_uuid: str) -> BnnPost | None:
+    async def get_post(self, post_uuid: str) -> Optional[BnnPost]:
         try:
             response = await self.get_http(f"{self.base_api_url}/casts/{post_uuid}")
+            if not response:
+                raise BnnPostNotFoundError(post_uuid)
+            
             data = response.json()
 
             return self.parse_post_from_json(data)
@@ -68,6 +84,9 @@ class BnnClient:
 
         while page_url:
             response = await self.get_http(page_url)
+            if not response:
+                raise BnnUserNotFoundError(user_uuid)
+            
             data = response.json()
 
             logging.info(f"page: {page_url}")
