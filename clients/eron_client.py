@@ -44,6 +44,10 @@ class EronClient(ClientBase):
     async def download(self, url: str):
         eron_kind = self.parse_eron_url(url)
 
+        if not eron_kind:
+            logging.error("Incorrect URL!")
+            return
+        
         match eron_kind.id_kind:
             case EronUrlKind.USER:
                 posts = await self.get_posts_by_user(eron_kind.id)
