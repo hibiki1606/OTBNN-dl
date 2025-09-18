@@ -61,8 +61,8 @@ class EronClient(ClientBase):
         parsed_url = parse.urlparse(url)
         path = parsed_url.path
         url_patterns = [
-            r"^/?(?:ero-voice/|ero-asmr/|moe-asmr/)(\d+)\.html$",  # e.g. /ero-voice/{post_id}.html
-            r"^/?(\w+)$",  # e.g. /{user_name}
+            r"^/?(?:ero-voice|ero-asmr|moe-asmr)/(\d+)\.html$",  # e.g. /ero-voice/{post_id}.html
+            r"^/?([\w-]+)$",  # e.g. /{user_name}
         ]
         kinds = [EronUrlKind.POST, EronUrlKind.USER]
 
