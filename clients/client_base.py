@@ -26,6 +26,3 @@ class ClientBase:
         except httpx.HTTPStatusError as e:
             logging.error(f"An error occurred during an HTTP request! Here is the information:\n{e}")
             return None
-        
-    def is_right_client(self, url: str) -> bool:
-        return False
