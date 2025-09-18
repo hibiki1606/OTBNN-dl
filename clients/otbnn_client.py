@@ -59,7 +59,6 @@ class BnnPost:
 class BnnClient(ClientBase):
     def __init__(self, output_dir: Union[str, Path], http_client=httpx.AsyncClient()):
         super().__init__(base_url="otobanana.com", output_dir=output_dir, http_client=http_client)
-        self.deep_mode = False
         self.base_api_url = f"https://api.v2.{self.base_url}/api"
 
     @staticmethod
