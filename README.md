@@ -9,11 +9,16 @@ A simple collection of python scripts that allows you to download Otobanana / Er
 - Detect whether to download R18 or Non-R18 posts from the provided url.
 - Skip the posts which have already been downloaded.
 
+> [!NOTE]
+> The support for Erovoice-ch is very experimental and may cause unhandled errors in anytime.  
+> The download speed for Erovoice-ch can be so slow due to its download system.
+
 #### Todo:
 - Sanitise filenames more precisely to avoid filesystem related errors.
 
 ### How to use
 First of all, set up your virtual environment to install dependencies.  
+To download posts on Erovoice-ch, your system needs to have ffmpeg installed.  
 
 The program will automatically detect whether to download R18 or Non-R18 post (otherwise all R18 or Non-R18 posts by a user) from the URL that you provide.  
 Therefore, you will just have to put a URL to download.
