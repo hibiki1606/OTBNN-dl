@@ -152,6 +152,8 @@ class EronClient(ClientBase):
             # To avoid that kind of errors, -allowed_extensions and -extension_picky are required:
             "-allowed_extensions",
             "ALL",
+            "-extension_picky",
+            "0",
             "-protocol_whitelist",
             "file,https,tls,tcp,crypto",
             "-i",
