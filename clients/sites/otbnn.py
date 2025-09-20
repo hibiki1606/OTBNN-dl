@@ -10,7 +10,7 @@ import httpx
 import logging
 import utils
 
-from .client_base import ClientBase
+from clients.client_base import ClientBase
 
 
 class BnnUserNotFoundError(Exception):
