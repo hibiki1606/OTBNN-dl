@@ -1,5 +1,4 @@
 from enum import Enum
-import subprocess
 from urllib import parse
 from bs4 import BeautifulSoup
 import re
@@ -9,8 +8,12 @@ import httpx
 from typing import Union, Optional
 from pathlib import Path
 import logging
+import asyncio
 
-from .client_base import ClientBase
+from clients.client_base import ClientBase
+
+
+sem = asyncio.Semaphore(10)  # Limit concurrent tasks
 
 
 @dataclass
@@ -47,30 +50,34 @@ class EronClient(ClientBase):
         if not eron_kind:
             logging.error("Incorrect URL!")
             return
-        
+
+        tasks = []
         match eron_kind.id_kind:
             case EronUrlKind.USER:
                 posts = await self.get_posts_by_user(eron_kind.id)
                 for post in posts:
-                    self.save_post(post)
+                    tasks.append(self.save_post(post))
             case EronUrlKind.POST:
                 post = await self.get_post_by_id(eron_kind.id)
-                self.save_post(post)
+                tasks.append(self.save_post(post))
             case _:
                 logging.error(f'"{url}" is not a valid URL for this client!')
                 return
+
+        await asyncio.gather(*tasks)
 
     @staticmethod
     def parse_eron_url(url: str) -> Optional[EronKind]:
         parsed_url = parse.urlparse(url)
         path = parsed_url.path
-        url_patterns = [
-            r"^/?(?:ero-voice|ero-asmr|moe-asmr)/(\d+)\.html$",  # e.g. /ero-voice/{post_id}.html
-            r"^/?([\w-]+)$",  # e.g. /{user_name}
-        ]
-        kinds = [EronUrlKind.POST, EronUrlKind.USER]
+        url_patterns = {
+            r"^/?(?:ero-voice|ero-asmr|moe-asmr)/(\d+)\.html$": EronUrlKind.POST,
+            # e.g. /ero-voice/{post_id}.html
+            r"^/?([\w-]+)$": EronUrlKind.USER,
+            # e.g. /{user_name}
+        }
 
-        for pattern, kind in zip(url_patterns, kinds):
+        for pattern, kind in url_patterns.items():
             id: re.Match = re.match(pattern, path)
             if id:
                 return EronKind(kind, id.group(1))
@@ -104,18 +111,19 @@ class EronClient(ClientBase):
 
         return posts
 
-    async def get_post_by_id(self, post_id: str):
+    async def get_post_by_id(self, post_id: str) -> EronPost:
         original_url = f"https://{self.base_url}/moe-asmr/{post_id}.html"
         response = await self.get_http(original_url)
         soup = BeautifulSoup(response.text, "html.parser")
-        
+
         voiceinfo = soup.select_one("#voiceInfos")
 
         post_title = voiceinfo.find("h1").text
         post_time = voiceinfo.select_one("li.postTime").text
-        
-        author_url = voiceinfo.select_one(".authorUser").find("a").get("href")
-        author_name = voiceinfo.select_one(".authorUser").find("a").text[:-2]
+
+        author_user = voiceinfo.select_one(".authorUser")
+        author_url = author_user.find("a").get("href")
+        author_name = author_user.find("a").text[:-2]
         author_id = parse.urlparse(author_url).path.replace("/", "")
 
         return EronPost(
@@ -127,7 +135,7 @@ class EronClient(ClientBase):
             original_url=original_url,
         )
 
-    def save_post(self, post: EronPost):
+    async def save_post(self, post: EronPost) -> None:
         logging.info(f"We're going to download the post {post.title} ...")
 
         output_path = Path(f"{self.output_dir}/{post.user_id} - {post.title}.m4a")
@@ -156,7 +164,9 @@ class EronClient(ClientBase):
         ]
 
         try:
-            subprocess.run(arguments, check=True)
+            async with sem:
+                p = await asyncio.create_subprocess_exec(*arguments)
+                await p.wait()
         except FileNotFoundError:
             logging.error(
                 "Ffmpeg is not found in the system! Please install it and add it to the path before you can download this post."

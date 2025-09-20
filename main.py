@@ -2,12 +2,17 @@ import asyncio
 import argparse
 import logging
 import sys
-import importlib
 from urllib import parse
-from pathlib import Path
 
 import httpx
 from clients.client_base import ClientBase
+
+# Supported sites
+from clients.sites.otbnn import BnnClient
+from clients.sites.eron import EronClient
+
+client_list = [BnnClient, EronClient]
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,20 +41,10 @@ async def main():
     http = httpx.AsyncClient()
 
     # Load Clients
-    client_module_path = Path("./clients")
-    clients: dict = {}
-    for client_module_file in client_module_path.glob("*_client.py"):
-        module_name = str(client_module_file).removesuffix(".py").replace("/", ".")
-        try:
-            module = importlib.import_module(module_name)
-            for name, client in vars(module).items():
-                if isinstance(client, type) and issubclass(client, ClientBase) and client is not ClientBase:
-                    logging.info(f"Loading {name}...")
-                    instance: ClientBase = client(output_dir=output_dir, http_client=http)
-                    clients[instance.get_base_url()] = instance  # "example.com": *client*
-
-        except ImportError as error:
-            logging.error(f"Failed to import {module_name} due to the error {error} !")
+    clients = {}
+    for client in client_list:
+        c: ClientBase = client(output_dir=output_dir, http_client=http)
+        clients[c.get_base_url()] = c  # "example.com": *client*
 
     hostname = parse.urlparse(otbnn_url).hostname
     if hostname not in clients:
