@@ -11,6 +11,7 @@ import logging
 import asyncio
 
 from clients.client_base import ClientBase
+import utils
 
 
 sem = asyncio.Semaphore(10)  # Limit concurrent tasks
@@ -137,8 +138,9 @@ class EronClient(ClientBase):
 
     async def save_post(self, post: EronPost) -> None:
         logging.info(f"We're going to download the post {post.title} ...")
-
-        output_path = Path(f"{self.output_dir}/{post.user_id} - {post.title}.m4a")
+        
+        filename = utils.sanitise_filename(f"{post.user_id} - {post.title} [{post.created_at.strftime('%Y-%m-%d')}].m4a")
+        output_path = self.output_dir / filename
         output_path.parent.mkdir(exist_ok=True)
 
         if output_path.exists():
