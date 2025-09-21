@@ -88,7 +88,7 @@ class EronClient(ClientBase):
         soup = BeautifulSoup(response.text, "html.parser")
 
         raw_posts = soup.select("ul.voiceList.cf > li")
-        author_name = soup.select_one(".authorUser").text[:-2]
+        author_name = soup.select_one(".authorUser").text[:-2] # Remove "さん"
 
         posts: list[EronPost] = []
 
