@@ -14,7 +14,7 @@ A simple collection of python scripts that allows you to download Otobanana / Er
 > The download speed for Erovoice-ch can be so slow due to its download system.
 
 #### Todo:
-- Sanitise filenames more precisely to avoid filesystem related errors.
+- Improve error handlings.
 
 ### How to use
 First of all, set up your virtual environment to install dependencies.  
