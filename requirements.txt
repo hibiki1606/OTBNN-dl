@@ -1,3 +1,4 @@
 httpx
 mutagen
 beautifulsoup4
+emoji

@@ -2,14 +2,15 @@ import logging
 import mutagen
 from pathlib import Path
 import re
+import emoji
 
 
 def sanitise_filename(filename: str) -> str:
     """
-    Remove invalid characters for windows-like systems in filenames. Such as backslash and asterisk etc
+    Remove invalid characters / emotes in filenames
     """
-
-    return re.sub(r'[\\/:*?"<>|]+', "", filename)
+    
+    return emoji.replace_emoji(re.sub(r'[\\/:*?"<>|]+', "", filename))
 
 
 def save_mp3_media(
