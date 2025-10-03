@@ -88,7 +88,7 @@ class EronClient(ClientBase):
         soup = BeautifulSoup(response.text, "html.parser")
 
         raw_posts = soup.select("ul.voiceList.cf > li")
-        author_name = soup.select_one(".authorUser").text[:-2] # Remove "さん"
+        author_name = soup.select_one(".authorUser").text[:-2]  # Remove "さん"
 
         posts: list[EronPost] = []
 
@@ -138,7 +138,7 @@ class EronClient(ClientBase):
 
     async def save_post(self, post: EronPost) -> None:
         logging.info(f"We're going to download the post {post.title} ...")
-        
+
         filename = utils.sanitise_filename(f"{post.user_id} - {post.title} [{post.created_at.strftime('%Y-%m-%d')}].m4a")
         output_path = self.output_dir / filename
         output_path.parent.mkdir(exist_ok=True)

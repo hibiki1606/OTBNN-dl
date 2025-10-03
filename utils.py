@@ -9,7 +9,7 @@ def sanitise_filename(filename: str) -> str:
     """
     Remove invalid characters / emotes in filenames
     """
-    
+
     return emoji.replace_emoji(re.sub(r'[\\/:*?"<>|]+', "", filename))
 
 

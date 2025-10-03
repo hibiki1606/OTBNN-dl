@@ -67,8 +67,8 @@ class BnnClient(ClientBase):
         path = parsed_url.path
         base_url = parsed_url.hostname
         url_patterns = [
-            r"^/?(deep/|general/)?user/([\w-]+)(?:/cast)?$",  # e.g. /{deep/|general/}/user/{user_uuid}/cast
-            r"^/?(deep/|general/)?cast/([\w-]+)$",  # e.g. /{deep/|general/}/cast/{post_uuid}
+            r"^/?(deep|general)?/user/([\w-]+)(?:/cast)?$",  # e.g. /{deep|general}/user/{user_uuid}/cast
+            r"^/?(deep|general)?/cast/([\w-]+)$",  # e.g. /{deep|general}/cast/{post_uuid}
         ]
         kinds = [BnnUrlKind.USER, BnnUrlKind.CAST]
 
@@ -169,7 +169,9 @@ class BnnClient(ClientBase):
     async def save_post(self, post: BnnPost):
         logging.info(f"Preparing to download: {post.original_url} ( {post.media_url} ) ...")
 
-        filename = utils.sanitise_filename(f"{post.user_name} - {post.title} [{post.created_at.strftime('%Y-%m-%d_%H%M')}].mp3")
+        filename = utils.sanitise_filename(
+            f"{post.user_name} - {post.title} [{post.created_at.strftime('%Y-%m-%d_%H%M')}].mp3"
+        )
         output_path = self.output_dir / filename
 
         if output_path.exists():
