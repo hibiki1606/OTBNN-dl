@@ -14,7 +14,7 @@ class ClientBase:
     def get_base_url(self) -> str:
         return self.base_url
 
-    async def download(self, url: str):
+    async def download(self, url: str) -> bool:
         raise NotImplementedError()
 
     async def get_http(self, api_url: str) -> Optional[httpx.Response]:

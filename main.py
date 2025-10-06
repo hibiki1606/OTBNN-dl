@@ -41,7 +41,7 @@ async def main():
     http = httpx.AsyncClient()
 
     # Load Clients
-    clients = {}
+    clients: dict[str, ClientBase] = {}
     for client in client_list:
         c: ClientBase = client(output_dir=output_dir, http_client=http)
         clients[c.get_base_url()] = c  # "example.com": *client*
@@ -51,10 +51,15 @@ async def main():
         logging.error("No client matched!")
         return
 
-    await clients[hostname].download(otbnn_url)
+    # Download
+    is_ok = await clients[hostname].download(otbnn_url)
+    if not is_ok:
+        logging.error("An error occurred during download!")
+        return
 
     # Quit
     logging.info("Operation finished!")
+    return
 
 
 if __name__ == "__main__":

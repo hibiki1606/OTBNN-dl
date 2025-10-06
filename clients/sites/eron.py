@@ -45,12 +45,12 @@ class EronClient(ClientBase):
     def __init__(self, output_dir: Union[str, Path], http_client=httpx.AsyncClient()):
         super().__init__(base_url="erovoice-ch.com", output_dir=output_dir, http_client=http_client)
 
-    async def download(self, url: str):
+    async def download(self, url: str) -> bool:
         eron_kind = self.parse_eron_url(url)
 
         if not eron_kind:
             logging.error("Incorrect URL!")
-            return
+            return False
 
         tasks = []
         match eron_kind.id_kind:
@@ -63,9 +63,10 @@ class EronClient(ClientBase):
                 tasks.append(self.save_post(post))
             case _:
                 logging.error(f'"{url}" is not a valid URL for this client!')
-                return
+                return False
 
         await asyncio.gather(*tasks)
+        return True
 
     @staticmethod
     def parse_eron_url(url: str) -> Optional[EronKind]:

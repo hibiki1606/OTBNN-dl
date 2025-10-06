@@ -77,11 +77,11 @@ class BnnClient(ClientBase):
             if uuid:
                 return OtbnnKind(base_url, (uuid.group(1) == "deep/"), kind, uuid.group(2))
 
-    async def download(self, url: str):
+    async def download(self, url: str) -> bool:
         otbnn_kind = self.parse_otbnn_url(url)
         if not otbnn_kind:
             logging.error("Incorrect URL!")
-            return
+            return False
         posts: list[BnnPost]
 
         # Fetch Post(s)
@@ -98,7 +98,7 @@ class BnnClient(ClientBase):
 
             case _:
                 logging.error(f'"{url}" is not a valid URL for this client!')
-                return
+                return False
 
         # Download Post(s)
         save_tasks = []
@@ -107,6 +107,7 @@ class BnnClient(ClientBase):
             save_tasks.append(self.save_post(post))
 
         await asyncio.gather(*save_tasks)
+        return True
 
     async def get_post(self, post_uuid: str) -> Optional[BnnPost]:
         try:
