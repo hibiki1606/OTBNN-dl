@@ -141,7 +141,7 @@ class EronClient(ClientBase):
 
         filename = utils.sanitise_filename(f"{post.user_id} - {post.title} [{post.created_at.strftime('%Y-%m-%d')}].m4a")
         output_path = self.output_dir / filename
-        output_path.parent.mkdir(exist_ok=True)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
         if output_path.exists():
             logging.info(f"The downloaded file {output_path} already exists, we're skipping this post!")
