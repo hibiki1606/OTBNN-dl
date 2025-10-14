@@ -24,7 +24,7 @@ def save_mp3_media(
     out_file = Path(output_path).with_suffix(".mp3")
     out_file.parent.mkdir(parents=True, exist_ok=True)
 
-    output_path.write_bytes(mp3_bytes)
+    out_file.write_bytes(mp3_bytes)
 
     meta = mutagen.File(output_path, easy=True)
     meta["artist"] = mp3_artist_name
