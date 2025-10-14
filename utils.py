@@ -3,6 +3,7 @@ import mutagen
 from pathlib import Path
 import re
 import emoji
+from typing import Union
 
 
 def sanitise_filename(filename: str) -> str:
@@ -14,16 +15,14 @@ def sanitise_filename(filename: str) -> str:
 
 
 def save_mp3_media(
-    output_path: Path,
+    output_path: Union[Path, str],
     mp3_bytes: bytes,
     mp3_artist_name: str = None,
     mp3_title: str = None,
     mp3_website: str = None,
 ) -> None:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    if not output_path.suffix == ".mp3":
-        logging.warning("The file will be saved without a valid extension!")
+    out_file = Path(output_path).with_suffix(".mp3")
+    out_file.parent.mkdir(parents=True, exist_ok=True)
 
     output_path.write_bytes(mp3_bytes)
 
