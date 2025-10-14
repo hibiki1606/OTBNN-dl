@@ -26,12 +26,12 @@ def save_mp3_media(
 
     out_file.write_bytes(mp3_bytes)
 
-    meta = mutagen.File(output_path, easy=True)
+    meta = mutagen.File(out_file, easy=True)
     meta["artist"] = mp3_artist_name
     meta["title"] = mp3_title
     meta["website"] = mp3_website
 
     meta.save()
 
-    logging.info(f"mp3 saved, to: {output_path} !")
+    logging.info(f"mp3 saved, to: {out_file} !")
     return
