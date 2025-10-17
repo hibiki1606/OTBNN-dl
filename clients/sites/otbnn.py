@@ -75,7 +75,7 @@ class BnnClient(ClientBase):
         for pattern, kind in zip(url_patterns, kinds):
             uuid: re.Match = re.match(pattern, path)
             if uuid:
-                return OtbnnKind(base_url, (uuid.group(1) == "deep/"), kind, uuid.group(2))
+                return OtbnnKind(base_url, (uuid.group(1) == "deep"), kind, uuid.group(2))
 
     async def download(self, url: str) -> bool:
         otbnn_kind = self.parse_otbnn_url(url)
